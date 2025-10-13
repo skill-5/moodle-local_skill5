@@ -8,60 +8,57 @@ if ($hassiteconfig) { // This ensures the settings are only available to site ad
     $ADMIN->add('localplugins', new admin_category('local_skill5_category', 'Skill5 Moodle'));
 
     // 2. Define the main settings page and add it to the parent node.
-    $settings = new admin_settingpage('local_skill5_settings', get_string('pluginname', 'local_skill5'));
+    $settings = new admin_settingpage('local_skill5_settings', get_string('overview', 'local_skill5'));
     $ADMIN->add('local_skill5_category', $settings);
 
-    // 3. Define the LTI Management page and add it to the parent node.
-    $lti_page = new admin_externalpage('local_skill5_lti_management', get_string('ltimanagement', 'local_skill5'), new moodle_url('/local/skill5/lti_management.php'));
+    // 3. Define the Connection Assistant page and add it to the parent node.
+    $connection_assistant_page = new admin_externalpage(
+        'local_skill5_connection_assistant',
+        get_string('connectionassistant', 'local_skill5'),
+        new moodle_url('/local/skill5/pages/connection_assistant.php')
+    );
+    $ADMIN->add('local_skill5_category', $connection_assistant_page);
+
+    // 4. Define the LTI Management page and add it to the parent node.
+    $lti_page = new admin_externalpage(
+        'local_skill5_lti_management',
+        get_string('ltimanagement', 'local_skill5'),
+        new moodle_url('/local/skill5/pages/lti_management.php')
+    );
     $ADMIN->add('local_skill5_category', $lti_page);
 
-    // 4. Define the User Management page and add it to the parent node.
-    $user_page = new admin_externalpage('local_skill5_user_management', get_string('usermanagement', 'local_skill5'), new moodle_url('/local/skill5/user_management.php'));
+    // 5. Define the User Management page and add it to the parent node.
+    $user_page = new admin_externalpage(
+        'local_skill5_user_management',
+        get_string('usermanagement', 'local_skill5'),
+        new moodle_url('/local/skill5/pages/user_management.php')
+    );
     $ADMIN->add('local_skill5_category', $user_page);
 
-    // --- Define the content of the main settings page ---
-
-    // Check if the tool is already created.
+    // This code defines the content of the main settings page.
+    // It only runs when the settings page is being displayed.
+    // This code runs on all admin pages. We need to check if we are on a Skill5 page
+    // before attempting to redirect.
     $tool = $DB->get_record('lti_types', ['name' => 'Skill5 LTI Tool']);
+    $category_param = optional_param('category', '', PARAM_ALPHANUMEXT);
+    $section_param = optional_param('section', '', PARAM_ALPHANUMEXT);
 
-    if ($tool) {
+    $is_on_skill5_category_page = ($category_param === 'local_skill5_category');
+    $is_on_skill5_section_page = (strpos($section_param, 'local_skill5_') === 0);
+
+    if (!$tool && ($is_on_skill5_category_page || $is_on_skill5_section_page)) {
+        redirect(new moodle_url('/local/skill5/pages/landing.php'));
+    }
+
+    // This code defines the content of the main settings page ('Overview').
+    if ($settings && $tool) {
         // --- STATE: CONNECTED ---
-        $settings->add(new admin_setting_heading('connection_established_heading', get_string('connection_established_heading', 'local_skill5'), get_string('connection_established_text', 'local_skill5')));
-
-        // Display Skill5 User Info in a box.
         $admin_email = get_config('local_skill5', 'admin_email');
-        $entityuser_id = get_config('local_skill5', 'entityuserid');
-
-        $user_info_html = '<ul>';
-        $user_info_html .= '<li><strong>' . get_string('label_adminemail', 'local_skill5') . ':</strong> ' . $admin_email . '</li>';
-        $user_info_html .= '<li><strong>' . get_string('label_entityuserid', 'local_skill5') . ':</strong> ' . $entityuser_id . '</li>';
-        $user_info_html .= '</ul>';
-        $settings->add(new admin_setting_heading('skill5userinfo_display', get_string('skill5userinfo', 'local_skill5'), $user_info_html));
-
-        // Display disabled button and tip.
-        $disabled_button = html_writer::link('#', get_string('connect_button', 'local_skill5'), ['class' => 'btn btn-primary disabled', 'role' => 'button', 'aria-disabled' => 'true']);
-        $settings->add(new admin_setting_heading('connect_button_disabled', '', $disabled_button));
-
-        $lti_management_url = new moodle_url('/local/skill5/lti_management.php');
-        $lti_management_link = html_writer::link($lti_management_url, get_string('ltimanagement_link_text', 'local_skill5'));
-        $settings->add(new admin_setting_heading('connection_tip', '', html_writer::tag('div', get_string('connection_established_tip', 'local_skill5', $lti_management_link), ['class' => 'text-muted'])));
-
-    } else {
-        // --- STATE: NOT CONNECTED ---
-        $settings->add(new admin_setting_heading('settings_intro_heading', get_string('settings_intro_heading', 'local_skill5'), get_string('settings_intro_text', 'local_skill5')));
-
-        // Setting: Administrator Email.
-        $settings->add(new admin_setting_configtext(
-            'local_skill5/admin_email',
-            get_string('admin_email', 'local_skill5'),
-            get_string('admin_email_desc', 'local_skill5'),
-            '',
-            PARAM_EMAIL
-        ));
-
-        // Action: Connect button.
-        $url = new moodle_url('/local/skill5/connect.php', ['sesskey' => sesskey()]);
-        $link = html_writer::link($url, get_string('connect_button', 'local_skill5'), ['class' => 'btn btn-primary']);
-        $settings->add(new admin_setting_heading('connect_heading', '', $link));
+        $connection_assistant_url = new moodle_url('/local/skill5/pages/connection_assistant.php');
+        $connection_assistant_link = html_writer::link($connection_assistant_url, get_string('connectionassistant', 'local_skill5'));
+        $summary_text = get_string('summary_connected', 'local_skill5', $admin_email);
+        $settings->add(new admin_setting_heading('skill5_summary', get_string('connectionstatus', 'local_skill5'), $summary_text));
+        $tip_text = get_string('summary_connected_tip', 'local_skill5', $connection_assistant_link);
+        $settings->add(new admin_setting_heading('skill5_summary_tip', '', $tip_text));
     }
 }

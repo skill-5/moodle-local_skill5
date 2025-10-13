@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 admin_externalpage_setup('local_skill5_lti_management');
@@ -60,12 +60,8 @@ if ($tool && $admin_email && $entityuser_id) {
     echo $OUTPUT->box_end();
 
 } else {
-    // --- Not Connected Box ---
-    echo $OUTPUT->box_start('generalbox boxaligncenter', 'not-connected');
-    echo '<p>' . get_string('ltinotconnected', 'local_skill5') . '</p>';
-    $connect_url = new moodle_url('/local/skill5/settings.php');
-    echo $OUTPUT->single_button($connect_url, get_string('connect', 'local_skill5'));
-    echo $OUTPUT->box_end();
+    // If the tool is not fully configured, redirect to the initial setup page.
+    redirect(new moodle_url('/local/skill5/pages/landing.php'));
 }
 
 echo $OUTPUT->footer();

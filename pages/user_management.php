@@ -1,10 +1,16 @@
 <?php
 
-require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 // Ensure the user has the required capability.
 admin_externalpage_setup('local_skill5_user_management');
+
+// Check if the tool is configured. If not, redirect to the landing page.
+$tool = $DB->get_record('lti_types', ['name' => 'Skill5 LTI Tool']);
+if (!$tool) {
+    redirect(new moodle_url('/local/skill5/pages/landing.php'));
+}
 
 // Start page output.
 echo $OUTPUT->header();

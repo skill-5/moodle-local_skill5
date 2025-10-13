@@ -1,7 +1,8 @@
 <?php
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Skill5 Connection Assistant';
+$string['pluginname'] = 'Skill5 Moodle';
+$string['overview'] = 'Overview';
 $string['failedcreateltool'] = 'Failed to Create LTI Tool';
 $string['connectionfailed'] = 'Connection to Skill5 API Failed';
 $string['admin_email'] = 'Skill5 Administrator Email';
@@ -41,10 +42,18 @@ $string['step2_instruction_4'] = 'Save the activity. Students can now access the
 $string['settings_intro_heading'] = 'Connect your Moodle to Skill5';
 $string['settings_intro_text'] = 'Enter your Skill5 administrator email below and click the connect button. This will automatically create and configure the LTI 1.3 tool for you.';
 $string['connection_established_heading'] = 'Connection Established';
-$string['connection_established_text'] = 'A Skill5 LTI tool is already configured for this site. You cannot create a new one until the existing tool is removed.';
-$string['connection_established_tip'] = 'You can view the connection details on the {$a}. If you need to generate a new connection, you must first delete the existing tool from the Moodle LTI tools page.';
+$string['connection_established_text'] = 'A Skill5 Connection is already configured for this site.';
+$string['connection_established_tip'] = 'You can view the connection details on the {$a}. If you need to generate a new connection, you must first delete the existing connection from the Moodle LTI tools page.';
 $string['ltimanagement_link_text'] = 'LTI Management page';
 
 // User Management Page
 $string['usermanagement'] = 'User Management';
+
+// Connection Assistant Page & Summary
+$string['connectionassistant'] = 'Skill5 Connection Assistant';
+$string['connectionstatus'] = 'Connection Status';
+$string['summary_connected'] = 'The connection to Skill5 is active for the user: {$a}.';
+$string['summary_connected_tip'] = 'To manage the connection, go to the {$a}.';
+$string['summary_not_connected'] = 'The connection to Skill5 is not configured.';
+$string['summary_not_connected_tip'] = 'To get started, go to the {$a}.';
 

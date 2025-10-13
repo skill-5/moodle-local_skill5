@@ -8,7 +8,6 @@ class lti_manager {
 
     private const LTI_SERVER_URL = 'https://gvpnpeetmg.us-east-2.awsapprunner.com';
     private const API_LTI_JWT_SECRET = 'skill5_lti_jwt_key';
-    private const SKILL5_URL = 'https://beta.skill5.com';
 
     /**
      * Creates and configures the LTI 1.3 tool programmatically.
@@ -34,7 +33,7 @@ class lti_manager {
                 'Authorization: Bearer ' . self::API_LTI_JWT_SECRET
             ]
         ];
-        $response = $curl->post(self::SKILL5_URL . '/api/plugins/moodle/register/info/entity-user', json_encode(['email' => $admin_email]), $options);
+        $response = $curl->post(api_manager::get_skill5_url() . '/api/plugins/moodle/register/info/entity-user', json_encode(['email' => $admin_email]), $options);
 
         if ($curl->info['http_code'] !== 200) {
             throw new \moodle_exception('connection_failed', 'local_skill5', '', null, 'Could not fetch EntityUser ID from Skill5 API. Response: ' . $response);
@@ -70,7 +69,7 @@ class lti_manager {
 
         // 7. Finalize.
         set_config('connection_status', 'success', 'local_skill5');
-        redirect(new \moodle_url('/admin/settings.php?section=local_skill5_settings'), 'Connection established successfully!', 2, \core\output\notification::NOTIFY_SUCCESS);
+        redirect(new \moodle_url('/local/skill5/pages/landing.php'));
     }
 
     /**
@@ -195,7 +194,7 @@ class lti_manager {
         ];
 
         $curl_skill5 = new \curl();
-        $response_skill5 = $curl_skill5->post(self::SKILL5_URL . '/api/plugins/moodle/register', json_encode($skill5_app_payload), $options);
+        $response_skill5 = $curl_skill5->post(api_manager::get_skill5_url() . '/api/plugins/moodle/register', json_encode($skill5_app_payload), $options);
 
         if ($curl_skill5->info['http_code'] != 200 && $curl_skill5->info['http_code'] != 201) {
             lti_delete_type($newtoolid);

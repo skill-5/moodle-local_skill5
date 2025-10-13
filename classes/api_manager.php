@@ -10,6 +10,15 @@ class api_manager {
     private const API_LTI_JWT_SECRET = 'skill5_lti_jwt_key';
 
     /**
+     * Returns the base URL for the Skill5 API.
+     *
+     * @return string
+     */
+    public static function get_skill5_url(): string {
+        return self::SKILL5_URL;
+    }
+
+    /**
      * Fetches all users associated with a Moodle entity.
      *
      * @return array|null The list of users or null on failure.

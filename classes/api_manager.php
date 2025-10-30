@@ -6,7 +6,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class api_manager {
 
-    private const SKILL5_URL = 'https://beta.skill5.com';
+    private const SKILL5_URL = 'https://app.skill5.com';
 
     /**
      * Returns the base URL for the Skill5 API.

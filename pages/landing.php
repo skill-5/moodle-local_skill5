@@ -38,73 +38,11 @@ HTML;
 
 echo $iframe_html;
 
-// Inject the handshake script directly into the page.
-$handshake_script = <<<SCRIPT
-<script>
-(function() {
-    'use strict';
-    
-    const config = {
-        skill5Origin: '{$skill5_origin_url}',
-        connectionUrl: '{$connection_assistant_url->out(false)}'
-    };
-    
-    console.log('[Moodle] Handshake listener is active.');
-    
-    window.addEventListener('message', function receiveMessage(event) {
-        if (event.origin !== config.skill5Origin) {
-            console.warn('[Moodle] Message from unexpected origin ignored:', event.origin);
-            return;
-        }
-        
-        const message = event.data;
-        console.log('[Moodle] Received message:', message);
-        
-        if (message && message.type) {
-            switch (message.type) {
-                case 'SKILL5_IFRAME_READY':
-                    console.log('[Moodle] Received SKILL5_IFRAME_READY. Sending acknowledgment...');
-                    event.source.postMessage({ type: 'MOODLE_LISTENER_READY' }, event.origin);
-                    break;
-                    
-                case 'SKILL5_SEND_EMAIL':
-                    if (message.payload && message.payload.email) {
-                        const adminEmail = message.payload.email;
-                        console.log('[Moodle] Received email payload:', adminEmail);
-                        
-                        // Make an AJAX call to connect.php to create the LTI tool
-                        const connectUrl = '{$CFG->wwwroot}/local/skill5/connect.php';
-                        console.log('[Moodle] Calling connect.php via fetch...');
-                        
-                        fetch(connectUrl + '?email=' + encodeURIComponent(adminEmail), {
-                            method: 'GET',
-                            credentials: 'same-origin'
-                        })
-                        .then(response => {
-                            console.log('[Moodle] Connect.php response received');
-                            if (response.ok) {
-                                // Success! Redirect to the connection assistant
-                                console.log('[Moodle] Redirecting to connection_assistant.php');
-                                window.location.href = '{$CFG->wwwroot}/local/skill5/pages/connection_assistant.php';
-                            } else {
-                                console.error('[Moodle] Connect.php returned error:', response.status);
-                                alert('{$CFG->wwwroot}/local/skill5/lang/en/local_skill5.php?string=error_connection_failed');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('[Moodle] Error calling connect.php:', error);
-                            alert('{$CFG->wwwroot}/local/skill5/lang/en/local_skill5.php?string=error_connection_failed');
-                        });
-                    } else {
-                        console.error('[Moodle] Email payload is missing or invalid:', message.payload);
-                    }
-                    break;
-            }
-        }
-    });
-})();
-</script>
-SCRIPT;
-
-echo $handshake_script;
+// Initialize the handshake JavaScript module.
+$connect_url = new moodle_url('/local/skill5/connect.php');
+$PAGE->requires->js_call_amd('local_skill5/landing_handshake', 'init', [
+    $skill5_origin_url,
+    $connect_url->out(false),
+    $connection_assistant_url->out(false)
+]);
 echo $OUTPUT->footer();

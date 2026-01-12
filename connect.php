@@ -39,7 +39,9 @@ try {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         exit;
     } else {
-        print_error($e->errorcode, $e->module, $e->a, $e->debuginfo);
+        echo $OUTPUT->header();
+        echo $OUTPUT->notification($e->getMessage(), 'error');
+        echo $OUTPUT->footer();
     }
 } catch (\Exception $e) {
     // Return error response for AJAX, or display error page for direct access

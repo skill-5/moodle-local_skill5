@@ -58,3 +58,9 @@ $string['summary_connected_tip'] = 'To manage the connection, go to the {$a}.';
 $string['summary_not_connected'] = 'The connection to Skill5 is not configured.';
 $string['summary_not_connected_tip'] = 'To get started, go to the {$a}.';
 
+// Privacy API.
+$string['privacy:metadata:skill5_lti'] = 'In order to integrate with the Skill5 platform, user data is exchanged with the external Skill5 LTI service.';
+$string['privacy:metadata:skill5_lti:userid'] = 'The user ID is sent from Moodle to allow you to access your data on the Skill5 platform.';
+$string['privacy:metadata:skill5_lti:fullname'] = 'Your full name is sent to the Skill5 platform to provide a personalized learning experience.';
+$string['privacy:metadata:skill5_lti:email'] = 'Your email address is sent to the Skill5 platform to enable account identification and communication.';
+

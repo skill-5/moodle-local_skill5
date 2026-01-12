@@ -50,7 +50,7 @@ try {
         exit;
     } else {
         echo $OUTPUT->header();
-        echo $OUTPUT->notification('An unexpected error occurred: ' . $e->getMessage());
+        echo $OUTPUT->notification(get_string('error_unexpected', 'local_skill5') . ': ' . $e->getMessage());
         echo $OUTPUT->footer();
     }
 }

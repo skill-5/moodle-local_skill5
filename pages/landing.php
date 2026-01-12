@@ -88,12 +88,12 @@ $handshake_script = <<<SCRIPT
                                 window.location.href = '{$CFG->wwwroot}/local/skill5/pages/connection_assistant.php';
                             } else {
                                 console.error('[Moodle] Connect.php returned error:', response.status);
-                                alert('Connection failed. Please try again or contact support.');
+                                alert('{$CFG->wwwroot}/local/skill5/lang/en/local_skill5.php?string=error_connection_failed');
                             }
                         })
                         .catch(error => {
                             console.error('[Moodle] Error calling connect.php:', error);
-                            alert('Connection failed. Please try again or contact support.');
+                            alert('{$CFG->wwwroot}/local/skill5/lang/en/local_skill5.php?string=error_connection_failed');
                         });
                     } else {
                         console.error('[Moodle] Email payload is missing or invalid:', message.payload);

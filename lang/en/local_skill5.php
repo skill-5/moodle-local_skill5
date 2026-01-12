@@ -64,3 +64,47 @@ $string['privacy:metadata:skill5_lti:userid'] = 'The user ID is sent from Moodle
 $string['privacy:metadata:skill5_lti:fullname'] = 'Your full name is sent to the Skill5 platform to provide a personalized learning experience.';
 $string['privacy:metadata:skill5_lti:email'] = 'Your email address is sent to the Skill5 platform to enable account identification and communication.';
 
+// Error messages.
+$string['error_api_jwt_secret'] = 'API JWT Secret not found in configuration. Please reconnect the plugin.';
+$string['error_entity_user_id'] = 'Admin Entity User ID not found in config. Please reconnect the plugin.';
+$string['error_invalid_response'] = 'Invalid response from Skill5 API when fetching EntityUser ID.';
+$string['error_curl_request'] = 'cURL request failed with error: {$a}';
+$string['error_api_request'] = 'API request to {$a->endpoint} failed with HTTP code {$a->httpcode}. Response: {$a->response}';
+$string['error_missing_admin_email'] = 'Admin email not configured. Please configure the admin email in settings.';
+$string['error_fetch_entity_data'] = 'Could not fetch Entity data from Skill5 API. Response: {$a}';
+$string['error_missing_entity_fields'] = 'Invalid response from Skill5 API. Missing entityUserId, entityId or jwtSecret.';
+$string['error_lti_no_id'] = 'lti_add_type did not return a valid ID.';
+$string['error_lti_creation_failed'] = 'Failed to create LTI tool: {$a}';
+$string['error_unknown_lti_server'] = 'Unknown error from LTI Server.';
+$string['error_register_lti_platform'] = 'Failed to register platform on LTI Server (HTTP {$a->httpcode}): {$a->message}';
+$string['error_register_skill5_app'] = 'Failed to register Moodle on Skill5 App. Response: {$a}';
+$string['error_unexpected'] = 'An unexpected error occurred';
+$string['error_fetch_user_details'] = 'Error fetching user details from Skill5';
+$string['error_user_not_found'] = 'User not found.';
+$string['error_fetch_users'] = 'Error fetching users from Skill5';
+$string['error_connection_failed'] = 'Connection failed. Please try again or contact support.';
+
+// LTI Tool.
+$string['lti_tool_name'] = 'Skill5 LTI Tool';
+$string['lti_tool_description'] = 'LTI Tool for integration with the Skill5 platform.';
+
+// User details page.
+$string['user_details_heading'] = 'User Details: {$a}';
+$string['course_progress'] = 'Course Progress';
+$string['course'] = 'Course';
+$string['completed_at'] = 'Completed At';
+$string['not_completed'] = '-';
+$string['no_course_progress'] = 'No course progress found.';
+$string['badges'] = 'Badges';
+$string['badge'] = 'Badge';
+$string['issued_at'] = 'Issued At';
+$string['no_badges'] = 'No badges found.';
+$string['certificates'] = 'Certificates';
+$string['certificate'] = 'Certificate';
+$string['no_certificates'] = 'No certificates found.';
+
+// User management page.
+$string['login_count'] = 'Login Count';
+$string['last_login'] = 'Last Login';
+$string['never'] = 'Never';
+$string['view_details'] = 'View Details';

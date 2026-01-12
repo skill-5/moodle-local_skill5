@@ -21,7 +21,7 @@ class lti_manager {
         $admin_email = get_config('local_skill5', 'admin_email');
 
         if (empty($admin_email)) {
-            throw new \moodle_exception('missingconfig', 'local_skill5');
+            throw new \moodle_exception('error_missing_admin_email', 'local_skill5');
         }
 
         // 2. Fetch the EntityUser ID, Entity ID and JWT Secret from Skill5 API (no authentication required).
@@ -34,11 +34,11 @@ class lti_manager {
         $response = $curl->post(api_manager::get_skill5_url() . '/api/plugins/moodle/register/info/entity-user', json_encode(['email' => $admin_email]), $options);
 
         if ($curl->info['http_code'] !== 200) {
-            throw new \moodle_exception('connection_failed', 'local_skill5', '', null, 'Could not fetch Entity data from Skill5 API. Response: ' . $response);
+            throw new \moodle_exception('error_fetch_entity_data', 'local_skill5', '', null, $response);
         }
         $entity_data = json_decode($response);
         if (empty($entity_data->entityUserId) || empty($entity_data->entityId) || empty($entity_data->jwtSecret)) {
-            throw new \moodle_exception('connection_failed', 'local_skill5', '', null, 'Invalid response from Skill5 API. Missing entityUserId, entityId or jwtSecret.');
+            throw new \moodle_exception('error_missing_entity_fields', 'local_skill5');
         }
         $entityuser_id = $entity_data->entityUserId;
         $entity_id = $entity_data->entityId;
@@ -60,12 +60,12 @@ class lti_manager {
         try {
             $newtoolid = lti_add_type($tool, $toolconfig);
             if (empty($newtoolid)) {
-                throw new \moodle_exception('failedcreateltool', 'local_skill5', '', null, 'lti_add_type did not return a valid ID.');
+                throw new \moodle_exception('error_lti_no_id', 'local_skill5');
             }
             $newtool = $DB->get_record('lti_types', ['id' => $newtoolid]);
             $clientid = $newtool->clientid;
         } catch (\Exception $e) {
-            throw new \moodle_exception('failedcreateltool', 'local_skill5', '', null, 'Failed to create LTI tool: ' . $e->getMessage());
+            throw new \moodle_exception('error_lti_creation_failed', 'local_skill5', '', null, $e->getMessage());
         }
 
         // 5. Register the platform on the LTI Server.
@@ -89,8 +89,7 @@ class lti_manager {
         $secret = get_config('local_skill5', 'api_jwt_secret');
         
         if (empty($secret)) {
-            throw new \moodle_exception('error', 'local_skill5', '', null, 
-                'API JWT Secret not found in configuration. Please reconnect the plugin.');
+            throw new \moodle_exception('error_api_jwt_secret', 'local_skill5');
         }
         
         return $secret;
@@ -104,8 +103,8 @@ class lti_manager {
      */
     private static function get_tool_definition(string $lti_server_url): \stdClass {
         $tool = new \stdClass();
-        $tool->name = 'Skill5 LTI Tool';
-        $tool->description = 'LTI Tool for integration with the Skill5 platform.';
+        $tool->name = get_string('lti_tool_name', 'local_skill5');
+        $tool->description = get_string('lti_tool_description', 'local_skill5');
         $tool->toolurl = $lti_server_url . '/api/public/lti';
         $tool->baseurl = $lti_server_url . '/api/public/lti';
         $tool->ltiversion = '1.3.0';
@@ -186,8 +185,9 @@ class lti_manager {
         if ($http_code_lti !== 201 && $http_code_lti !== 409) {
             lti_delete_type($newtoolid);
             $error_details = json_decode($response_lti);
-            $error_message = $error_details->error ?? 'Unknown error from LTI Server.';
-            throw new \moodle_exception('connectionfailed', 'local_skill5', '', null, 'Failed to register platform on LTI Server (HTTP ' . $http_code_lti . '): ' . $error_message);
+            $error_message = $error_details->error ?? get_string('error_unknown_lti_server', 'local_skill5');
+            $error_data = (object)['httpcode' => $http_code_lti, 'message' => $error_message];
+            throw new \moodle_exception('error_register_lti_platform', 'local_skill5', '', $error_data);
         }
     }
 
@@ -220,8 +220,7 @@ class lti_manager {
 
         if ($curl_skill5->info['http_code'] != 200 && $curl_skill5->info['http_code'] != 201) {
             lti_delete_type($newtoolid);
-            // TODO: Add logic to un-register from the LTI server if this call fails.
-            throw new \moodle_exception('connectionfailed', 'local_skill5', '', null, 'Failed to register Moodle on Skill5 App. Response: ' . $response_skill5);
+            throw new \moodle_exception('error_register_skill5_app', 'local_skill5', '', null, $response_skill5);
         }
     }
 }

@@ -22,7 +22,7 @@ echo $OUTPUT->heading($heading);
 try {
     $users = local_skill5\api_manager::get_users();
 } catch (Exception $e) {
-    echo $OUTPUT->notification('Error fetching users from Skill5: ' . $e->getMessage());
+    echo $OUTPUT->notification(get_string('error_fetch_users', 'local_skill5') . ': ' . $e->getMessage());
     echo $OUTPUT->footer();
     exit;
 }
@@ -32,17 +32,17 @@ $table = new html_table();
 $table->head = [
     get_string('name'),
     get_string('email'),
-    'Login Count',
-    'Last Login',
-    'Actions'
+    get_string('login_count', 'local_skill5'),
+    get_string('last_login', 'local_skill5'),
+    get_string('actions')
 ];
 
 // Populate table rows.
 if (!empty($users)) {
     foreach ($users as $user) {
-        $last_login = $user->lastLoginAt ? userdate(strtotime($user->lastLoginAt)) : 'Never';
+        $last_login = $user->lastLoginAt ? userdate(strtotime($user->lastLoginAt)) : get_string('never', 'local_skill5');
         $details_url = new moodle_url('/local/skill5/user_details.php', ['id' => $user->entityUserId]);
-        $details_link = html_writer::link($details_url, 'View Details');
+        $details_link = html_writer::link($details_url, get_string('view_details', 'local_skill5'));
 
         $row = new html_table_row([
             $user->name,

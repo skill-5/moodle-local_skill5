@@ -1,0 +1,31 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Moodle specific
+# The amd/build directory contains compiled JavaScript that is generated from amd/src
+# Some projects commit these files, others don't. Uncomment the line below if you prefer
+# to generate them on deployment rather than committing them.
+# amd/build/*.min.js
+# amd/build/*.min.js.map
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# OS generated files
+Thumbs.db
+.Spotlight-V100
+.Trashes

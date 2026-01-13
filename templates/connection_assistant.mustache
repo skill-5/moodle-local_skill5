@@ -1,0 +1,51 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_skill5/connection_assistant
+
+    Connection Assistant page template.
+
+    Context variables required for this template:
+    * userinfo - User information data
+    * tip - Tip message with link
+
+    Example context (json):
+    {
+        "userinfo": [
+            {"label": "Admin Name", "value": "John Doe"},
+            {"label": "Admin Email", "value": "admin@example.com"}
+        ],
+        "tip": "To manage the connection, go to <a href='...'>LTI Management</a>"
+    }
+}}
+<div class="local-skill5-connection-assistant">
+    <div class="generalbox boxaligncenter">
+        <h3>{{#str}}connection_established_heading, local_skill5{{/str}}</h3>
+        <p>{{#str}}connection_established_text, local_skill5{{/str}}</p>
+        
+        <h4>{{#str}}skill5userinfo, local_skill5{{/str}}</h4>
+        <ul>
+            {{#userinfo}}
+            <li><strong>{{label}}:</strong> {{value}}</li>
+            {{/userinfo}}
+        </ul>
+        
+        <div class="text-muted" style="margin-top: 15px;">
+            {{{tip}}}
+        </div>
+    </div>
+</div>

@@ -27,35 +27,9 @@ try {
     exit;
 }
 
-// Define table headers.
-$table = new html_table();
-$table->head = [
-    get_string('name'),
-    get_string('email'),
-    get_string('login_count', 'local_skill5'),
-    get_string('last_login', 'local_skill5'),
-    get_string('actions')
-];
-
-// Populate table rows.
-if (!empty($users)) {
-    foreach ($users as $user) {
-        $last_login = $user->lastLoginAt ? userdate(strtotime($user->lastLoginAt)) : get_string('never', 'local_skill5');
-        $details_url = new moodle_url('/local/skill5/user_details.php', ['id' => $user->entityUserId]);
-        $details_link = html_writer::link($details_url, get_string('view_details', 'local_skill5'));
-
-        $row = new html_table_row([
-            $user->name,
-            $user->email,
-            $user->loginCount,
-            $last_login,
-            $details_link
-        ]);
-        $table->data[] = $row;
-    }
-}
-
-echo html_writer::table($table);
+// Render using template.
+$renderable = new \local_skill5\output\user_management($users);
+echo $OUTPUT->render($renderable);
 
 // End page output.
 echo $OUTPUT->footer();

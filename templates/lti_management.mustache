@@ -1,0 +1,87 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_skill5/lti_management
+
+    LTI Management page template.
+
+    Context variables required for this template:
+    * connectiondetails - Connection details section data
+    * nextsteps - Next steps section data
+
+    Example context (json):
+    {
+        "connectiondetails": {
+            "ltitoolinfo": {
+                "clientid": "abc123"
+            },
+            "skill5userinfo": {
+                "adminemail": "admin@example.com",
+                "entityuserid": "user123"
+            }
+        },
+        "nextsteps": {
+            "step1": {
+                "instruction": "Go to manage tools and enable the tool"
+            },
+            "step2": {
+                "instructions": [
+                    "Navigate to a course",
+                    "Add LTI activity"
+                ]
+            }
+        }
+    }
+}}
+<div class="local-skill5-lti-management">
+    {{#connectiondetails}}
+    <div class="generalbox boxaligncenter" id="connection-details">
+        <h3>{{#str}}connectiondetails, local_skill5{{/str}}</h3>
+        
+        <h4 class="mdl-left">{{#str}}ltitoolinfo, local_skill5{{/str}}</h4>
+        <ul>
+            <li><strong>{{#str}}label_clientid, local_skill5{{/str}}:</strong> {{ltitoolinfo.clientid}}</li>
+        </ul>
+        
+        <h4 class="mdl-left">{{#str}}skill5userinfo, local_skill5{{/str}}</h4>
+        <ul>
+            <li><strong>{{#str}}label_adminemail, local_skill5{{/str}}:</strong> {{skill5userinfo.adminemail}}</li>
+            <li><strong>{{#str}}label_entityuserid, local_skill5{{/str}}:</strong> {{skill5userinfo.entityuserid}}</li>
+        </ul>
+    </div>
+    {{/connectiondetails}}
+    
+    {{#nextsteps}}
+    <div class="generalbox boxaligncenter" id="next-steps">
+        <h3>{{#str}}nextsteps, local_skill5{{/str}}</h3>
+        
+        <h4>{{#str}}step1_heading, local_skill5{{/str}}</h4>
+        <p>{{#str}}step1_text, local_skill5{{/str}}</p>
+        <div class="alert alert-info">
+            {{{step1.instruction}}}
+        </div>
+        
+        <h4>{{#str}}step2_heading, local_skill5{{/str}}</h4>
+        <p>{{#str}}step2_text, local_skill5{{/str}}</p>
+        <ul>
+            {{#step2.instructions}}
+            <li>{{.}}</li>
+            {{/step2.instructions}}
+        </ul>
+    </div>
+    {{/nextsteps}}
+</div>

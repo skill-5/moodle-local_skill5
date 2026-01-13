@@ -108,3 +108,4 @@ $string['login_count'] = 'Login Count';
 $string['last_login'] = 'Last Login';
 $string['never'] = 'Never';
 $string['view_details'] = 'View Details';
+$string['no_users'] = 'No users found.';

@@ -63,6 +63,7 @@ const handleEmailPayload = (adminEmail, connectUrl, connectionAssistantUrl) => {
         method: 'GET',
         credentials: 'same-origin'
     })
+    // eslint-disable-next-line promise/always-return
     .then(response => {
         window.console.log('[Moodle] Connect.php response received');
         if (response.ok) {

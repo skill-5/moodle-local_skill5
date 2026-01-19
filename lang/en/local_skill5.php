@@ -73,6 +73,9 @@ $string['ltimanagement_link_text'] = 'LTI Management page';
 // User Management Page.
 $string['usermanagement'] = 'User Management';
 
+// Shop Catalog Page.
+$string['shopcatalog'] = 'Shop Catalog';
+
 // Connection Assistant Page and Summary.
 $string['connectionassistant'] = 'Skill5 Connection Assistant';
 $string['connectionstatus'] = 'Connection Status';

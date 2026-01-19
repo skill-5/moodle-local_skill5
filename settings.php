@@ -57,6 +57,14 @@ if ($hassiteconfig) {
     );
     $ADMIN->add('local_skill5_category', $userpage);
 
+    // 6. Define the Shop Catalog page and add it to the parent node.
+    $shopcatalogpage = new admin_externalpage(
+        'local_skill5_shop_catalog',
+        get_string('shopcatalog', 'local_skill5'),
+        new moodle_url('/local/skill5/pages/shop_catalog.php')
+    );
+    $ADMIN->add('local_skill5_category', $shopcatalogpage);
+
     // This code runs on all admin pages. We need to check if we are on a Skill5 page.
     $tool = $DB->get_record('lti_types', ['name' => 'Skill5 LTI Tool']);
     $categoryparam = optional_param('category', '', PARAM_ALPHANUMEXT);

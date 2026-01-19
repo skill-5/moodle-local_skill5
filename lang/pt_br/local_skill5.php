@@ -73,6 +73,9 @@ $string['ltimanagement_link_text'] = 'página de Gerenciamento LTI';
 // User Management Page.
 $string['usermanagement'] = 'Gerenciamento de Usuários';
 
+// Shop Catalog Page.
+$string['shopcatalog'] = 'Catálogo da Loja';
+
 // Connection Assistant Page and Summary.
 $string['connectionassistant'] = 'Assistente de Conexão Skill5';
 $string['connectionstatus'] = 'Status da Conexão';

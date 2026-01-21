@@ -76,6 +76,13 @@ $string['usermanagement'] = 'Gerenciamento de Usuários';
 // Shop Catalog Page.
 $string['shopcatalog'] = 'Catálogo da Loja';
 
+// Stripe Checkout Integration.
+$string['stripe_redirecting'] = 'Redirecionando para pagamento...';
+$string['stripe_payment_error'] = 'Erro ao processar pagamento. Tente novamente.';
+$string['stripe_popup_blocked'] = 'Popup pode estar bloqueado. Permita popups para este site.';
+$string['stripe_checkout_opened'] = 'Janela de pagamento aberta com sucesso.';
+$string['stripe_checkout_failed'] = 'Falha ao abrir janela de pagamento. Tente novamente.';
+
 // Connection Assistant Page and Summary.
 $string['connectionassistant'] = 'Assistente de Conexão Skill5';
 $string['connectionstatus'] = 'Status da Conexão';

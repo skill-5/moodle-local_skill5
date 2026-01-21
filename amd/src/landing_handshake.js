@@ -41,6 +41,19 @@ export const init = (skill5Origin, connectUrl, connectionAssistantUrl) => {
                         window.console.error('[Moodle] Email payload is missing or invalid:', message.payload);
                     }
                     break;
+
+                case 'SKILL5_OPEN_STRIPE_CHECKOUT':
+                    if (message.payload && message.payload.url) {
+                        handleStripeCheckout(message.payload);
+                    } else {
+                        window.console.error('[Moodle] Stripe checkout payload is missing or invalid:', message.payload);
+                    }
+                    break;
+
+                case 'SKILL5_PAYMENT_COMPLETED':
+                    window.console.log('[Moodle] Payment completed, forwarding to iframe:', message.payload);
+                    forwardMessageToIframe(message, skill5Origin);
+                    break;
             }
         }
     });
@@ -85,4 +98,88 @@ const handleEmailPayload = (adminEmail, connectUrl, connectionAssistantUrl) => {
             'OK'
         );
     });
+};
+
+/**
+ * Forward message from popup to Skill5 iframe.
+ *
+ * @param {Object} message The message to forward
+ * @param {string} targetOrigin The target origin for the message
+ */
+const forwardMessageToIframe = (message, targetOrigin) => {
+    const skill5Iframe = document.querySelector('iframe#skill5-shop-iframe-container');
+
+    if (skill5Iframe && skill5Iframe.contentWindow) {
+        skill5Iframe.contentWindow.postMessage(message, targetOrigin);
+        window.console.log('[Moodle] Message forwarded to iframe successfully');
+    } else {
+        window.console.error('[Moodle] Skill5 iframe not found. Cannot forward message.');
+    }
+};
+
+/**
+ * Handle Stripe checkout payload from Skill5 iframe.
+ *
+ * @param {Object} payload The checkout payload containing URL and session information
+ */
+const handleStripeCheckout = (payload) => {
+    window.console.log('[Moodle] Received checkout request:', payload);
+
+    if (payload.url) {
+        const checkoutWindow = window.open(
+            payload.url,
+            '_blank',
+            'width=600,height=700,scrollbars=yes,resizable=yes,noopener,noreferrer'
+        );
+
+        if (checkoutWindow) {
+            checkoutWindow.focus();
+            window.console.log('[Moodle] Checkout window opened successfully');
+            showMoodleNotification('stripe_redirecting', 'info');
+        } else {
+            window.console.warn('[Moodle] Popup may be blocked. Please allow popups for this site.');
+            showMoodleNotification('stripe_popup_blocked', 'warning');
+        }
+    } else {
+        window.console.error('[Moodle] Checkout URL not found in payload:', payload);
+        showMoodleNotification('stripe_payment_error', 'error');
+    }
+};
+
+/**
+ * Show Moodle notification to the user.
+ *
+ * @param {string} messageKey The notification message key (language string identifier)
+ * @param {string} type The notification type (info, success, warning, error)
+ */
+const showMoodleNotification = (messageKey, type = 'info') => {
+    let message = messageKey;
+
+    const messageMap = {
+        'stripe_redirecting': 'Redirecting to payment...',
+        'stripe_payment_error': 'Error processing payment. Please try again.',
+        'stripe_popup_blocked': 'Popup may be blocked. Please allow popups for this site.',
+        'stripe_checkout_opened': 'Payment window opened successfully.',
+        'stripe_checkout_failed': 'Failed to open payment window. Please try again.'
+    };
+
+    if (messageMap[messageKey]) {
+        message = messageMap[messageKey];
+    }
+
+    window.console.log(`[Moodle] [${type.toUpperCase()}] ${message}`);
+
+    if (typeof Notification !== 'undefined' && Notification.addNotification) {
+        Notification.addNotification({
+            message: message,
+            type: type
+        });
+    } else if (typeof M !== 'undefined' && M.util && M.util.add_notification) {
+        M.util.add_notification({
+            message: message,
+            type: type
+        });
+    } else {
+        window.console.log(`[Moodle] Notification: ${message}`);
+    }
 };

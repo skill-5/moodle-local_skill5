@@ -35,7 +35,7 @@ namespace local_skill5;
  */
 class lti_manager {
     /** @var string LTI server base URL. */
-    private const LTI_SERVER_URL = 'https://6as3yttb3k.us-east-1.awsapprunner.com';
+    private const LTI_SERVER_URL = 'https://lti.skill5.com';
 
     /**
      * Creates and configures the LTI 1.3 tool programmatically.

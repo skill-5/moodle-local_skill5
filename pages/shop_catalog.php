@@ -70,4 +70,3 @@ $PAGE->requires->js_call_amd('local_skill5/landing_handshake', 'init', [
     $connectionassistanturl->out(false),
 ]);
 echo $OUTPUT->footer();
-

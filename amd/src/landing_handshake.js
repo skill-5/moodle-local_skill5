@@ -16,16 +16,34 @@ import Notification from 'core/notification';
  * @param {string} connectionAssistantUrl The URL to connection_assistant.php
  */
 export const init = (skill5Origin, connectUrl, connectionAssistantUrl) => {
-    window.console.log('[Moodle] Handshake listener is active.');
+    window.console.log('[Moodle] Handshake listener is active. Skill5 Origin:', skill5Origin);
 
     window.addEventListener('message', (event) => {
-        if (event.origin !== skill5Origin) {
-            window.console.warn('[Moodle] Message from unexpected origin ignored:', event.origin);
+        const message = event.data;
+
+        // Log all incoming messages for debugging
+        window.console.log('[Moodle] Received message from origin:', event.origin, 'Message:', message);
+
+        // Handle payment completion from popup (may come from Skill5 origin)
+        if (message && message.type === 'SKILL5_PAYMENT_COMPLETED') {
+            // Validate origin is from Skill5
+            if (event.origin === skill5Origin || event.origin.includes('skill5.com')) {
+                window.console.log('[Moodle] Payment completed, forwarding to iframe:', message.payload);
+                forwardMessageToIframe(message, skill5Origin);
+            } else {
+                window.console.warn('[Moodle] Payment message from unexpected origin:', event.origin);
+            }
             return;
         }
 
-        const message = event.data;
-        window.console.log('[Moodle] Received message:', message);
+        // For other messages, strict origin check
+        if (event.origin !== skill5Origin) {
+            // Only warn if it looks like a Skill5 message
+            if (message && message.type && message.type.startsWith('SKILL5_')) {
+                window.console.warn('[Moodle] Message from unexpected origin ignored:', event.origin);
+            }
+            return;
+        }
 
         if (message && message.type) {
             switch (message.type) {
@@ -44,15 +62,10 @@ export const init = (skill5Origin, connectUrl, connectionAssistantUrl) => {
 
                 case 'SKILL5_OPEN_STRIPE_CHECKOUT':
                     if (message.payload && message.payload.url) {
-                        handleStripeCheckout(message.payload);
+                        handleStripeCheckout(message.payload, skill5Origin);
                     } else {
                         window.console.error('[Moodle] Stripe checkout payload is missing or invalid:', message.payload);
                     }
-                    break;
-
-                case 'SKILL5_PAYMENT_COMPLETED':
-                    window.console.log('[Moodle] Payment completed, forwarding to iframe:', message.payload);
-                    forwardMessageToIframe(message, skill5Origin);
                     break;
             }
         }
@@ -107,13 +120,41 @@ const handleEmailPayload = (adminEmail, connectUrl, connectionAssistantUrl) => {
  * @param {string} targetOrigin The target origin for the message
  */
 const forwardMessageToIframe = (message, targetOrigin) => {
-    const skill5Iframe = document.querySelector('iframe#skill5-shop-iframe-container');
+    const iframeSelectors = [
+        'iframe#skill5-shop-iframe-container',
+        'iframe#skill5-lti-catalog-iframe-container',
+        'iframe#skill5-iframe-container'
+    ];
 
-    if (skill5Iframe && skill5Iframe.contentWindow) {
-        skill5Iframe.contentWindow.postMessage(message, targetOrigin);
-        window.console.log('[Moodle] Message forwarded to iframe successfully');
-    } else {
+    window.console.log('[Moodle] Attempting to forward message to iframe. Target origin:', targetOrigin);
+    window.console.log('[Moodle] Looking for iframes:', iframeSelectors);
+
+    let iframeFound = false;
+
+    for (const selector of iframeSelectors) {
+        const skill5Iframe = document.querySelector(selector);
+        window.console.log('[Moodle] Checking selector:', selector, 'Found:', !!skill5Iframe);
+
+        if (skill5Iframe && skill5Iframe.contentWindow) {
+            try {
+                skill5Iframe.contentWindow.postMessage(message, targetOrigin);
+                window.console.log('[Moodle] Message forwarded to iframe successfully:', selector);
+                iframeFound = true;
+                break;
+            } catch (error) {
+                window.console.error('[Moodle] Error forwarding message to iframe:', error);
+            }
+        }
+    }
+
+    if (!iframeFound) {
         window.console.error('[Moodle] Skill5 iframe not found. Cannot forward message.');
+        // List all iframes on the page for debugging
+        const allIframes = document.querySelectorAll('iframe');
+        window.console.log('[Moodle] All iframes on page:', allIframes.length);
+        allIframes.forEach((iframe, index) => {
+            window.console.log('[Moodle] Iframe', index, '- ID:', iframe.id, 'Src:', iframe.src);
+        });
     }
 };
 
@@ -121,21 +162,40 @@ const forwardMessageToIframe = (message, targetOrigin) => {
  * Handle Stripe checkout payload from Skill5 iframe.
  *
  * @param {Object} payload The checkout payload containing URL and session information
+ * @param {string} skill5Origin The origin URL of the Skill5 platform
  */
-const handleStripeCheckout = (payload) => {
+const handleStripeCheckout = (payload, skill5Origin) => {
     window.console.log('[Moodle] Received checkout request:', payload);
 
     if (payload.url) {
         const checkoutWindow = window.open(
             payload.url,
-            '_blank',
-            'width=600,height=700,scrollbars=yes,resizable=yes,noopener,noreferrer'
+            'skill5_checkout',
+            'width=600,height=700,scrollbars=yes,resizable=yes'
         );
 
         if (checkoutWindow) {
             checkoutWindow.focus();
             window.console.log('[Moodle] Checkout window opened successfully');
             showMoodleNotification('stripe_redirecting', 'info');
+
+            // Monitor when popup closes and notify iframe to check payment status
+            const checkPopupClosed = setInterval(() => {
+                if (checkoutWindow.closed) {
+                    clearInterval(checkPopupClosed);
+                    window.console.log('[Moodle] Checkout popup closed, notifying iframe to check status');
+
+                    // Send message to iframe that popup was closed - iframe should verify payment
+                    const message = {
+                        type: 'SKILL5_CHECKOUT_POPUP_CLOSED',
+                        payload: {
+                            sessionId: payload.sessionId,
+                            checkoutSessionId: payload.checkoutSessionId
+                        }
+                    };
+                    forwardMessageToIframe(message, skill5Origin);
+                }
+            }, 500);
         } else {
             window.console.warn('[Moodle] Popup may be blocked. Please allow popups for this site.');
             showMoodleNotification('stripe_popup_blocked', 'warning');

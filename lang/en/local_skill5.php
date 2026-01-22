@@ -76,6 +76,9 @@ $string['usermanagement'] = 'User Management';
 // Shop Catalog Page.
 $string['shopcatalog'] = 'Shop Catalog';
 
+// LTI Catalog Page.
+$string['lticatalog'] = 'LTI Catalog';
+
 // Stripe Checkout Integration.
 $string['stripe_redirecting'] = 'Redirecting to payment...';
 $string['stripe_payment_error'] = 'Error processing payment. Please try again.';

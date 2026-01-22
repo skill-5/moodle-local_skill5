@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Shop catalog page for Skill5 plugin.
+ * LTI catalog page for Skill5 plugin.
  *
  * @package    local_skill5
  * @copyright  2025 Skill5
@@ -27,7 +27,7 @@ require_once($CFG->libdir . '/adminlib.php');
 
 use local_skill5\api_manager;
 
-admin_externalpage_setup('local_skill5_shop_catalog');
+admin_externalpage_setup('local_skill5_lti_catalog');
 
 global $CFG, $PAGE, $OUTPUT, $DB;
 
@@ -42,22 +42,22 @@ $skill5originurl = rtrim($skill5url, '/');
 $moodleorigin = $CFG->wwwroot;
 $connectionassistanturl = new moodle_url('/local/skill5/pages/connection_assistant.php');
 
-// Build the iframe URL with moodleOrigin parameter for shop plugin.
-$iframesrc = $skill5url . '/plugin/shop?moodleOrigin=' . urlencode($moodleorigin);
+// Build the iframe URL with moodleOrigin parameter for LTI catalog plugin.
+$iframesrc = $skill5url . '/plugin/config/lti-catalog?moodleOrigin=' . urlencode($moodleorigin);
 
 // Debug: Log the URLs being used.
-debugging('[Skill5 Shop Catalog] Moodle Origin: ' . $moodleorigin, DEBUG_DEVELOPER);
-debugging('[Skill5 Shop Catalog] Skill5 URL: ' . $skill5url, DEBUG_DEVELOPER);
-debugging('[Skill5 Shop Catalog] Iframe Source: ' . $iframesrc, DEBUG_DEVELOPER);
+debugging('[Skill5 LTI Catalog] Moodle Origin: ' . $moodleorigin, DEBUG_DEVELOPER);
+debugging('[Skill5 LTI Catalog] Skill5 URL: ' . $skill5url, DEBUG_DEVELOPER);
+debugging('[Skill5 LTI Catalog] Iframe Source: ' . $iframesrc, DEBUG_DEVELOPER);
 
 echo $OUTPUT->header();
 
 $iframehtml = <<<HTML
 <style>
     body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-    #skill5-shop-iframe-container { width: 100%; height: calc(100vh - 80px); border: none; padding-bottom: 100px; }
+    #skill5-lti-catalog-iframe-container { width: 100%; height: calc(100vh - 80px); border: none; padding-bottom: 100px; }
 </style>
-<iframe id="skill5-shop-iframe-container" src="{$iframesrc}"></iframe>
+<iframe id="skill5-lti-catalog-iframe-container" src="{$iframesrc}"></iframe>
 HTML;
 
 echo $iframehtml;
@@ -70,4 +70,3 @@ $PAGE->requires->js_call_amd('local_skill5/landing_handshake', 'init', [
     $connectionassistanturl->out(false),
 ]);
 echo $OUTPUT->footer();
-
